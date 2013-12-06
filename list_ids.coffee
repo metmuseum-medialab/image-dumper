@@ -1,5 +1,6 @@
 request = require 'request'
 async = require 'async'
+fs = require 'fs'
 
 ids = []
 working = []
@@ -10,13 +11,16 @@ Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
 grabIds = (task, callback) ->
     working.push task?.href
+    fs.appendFile 'working.json', task?.href+'\n', (err) -> throw err if err
 
-    request task?.href, (err, res, body) ->
-        body = JSON.parse body
-        console.log new_ids = /\d+/.exec(link?.href)?[0] for link in body?.collection?.items
-        ids.push new_ids...
+    request {url: task?.href, json: true}, (err, res, body) ->
+        if body?.collection?.items?
+            new_ids = (/\d+/.exec(link.href)?[0] for link in body.collection.items)
+            ids.push new_ids...
+            fs.appendFile 'ids.json', new_ids, (err) -> throw err if err
 
-        addToQueue body?._links?.next?.href
+        next = body?._links?.next?.href
+        addToQueue next if next
         callback()
 
 addToQueue = (href) ->
