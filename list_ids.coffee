@@ -32,8 +32,7 @@ addToQueue = (href) ->
 
 q = async.queue grabIds, threads
 q.drain = ->
-    console.log "#{seen} seen, #{working} working:"
-    console.log ids
+    console.log 'done?'
 
 request 'http://scrapi.org/ids?images=true', (err, res, body) ->
     max = + /[0-9]+/.exec(JSON.parse(body)?._links?.last?.href)?[0]
