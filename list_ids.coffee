@@ -35,7 +35,7 @@ q.drain = ->
     console.log "#{seen} seen, #{working} working:"
     console.log ids
 
-request 'http://scrapi.org/ids', (err, res, body) ->
+request 'http://scrapi.org/ids?images=true', (err, res, body) ->
     max = + /[0-9]+/.exec(JSON.parse(body)?._links?.last?.href)?[0]
     starting_pages = (Math.max(1,Math.round(max*(thread-1)/threads)) for thread in [1..threads])
-    q.push {href: 'http://scrapi.org/ids?page='+page} for page in starting_pages
+    q.push {href: 'http://scrapi.org/ids?images=true&page='+page} for page in starting_pages
