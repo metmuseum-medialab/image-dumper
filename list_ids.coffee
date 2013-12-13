@@ -5,7 +5,7 @@ fs = require 'fs'
 ids = []
 working = []
 seen = []
-threads = 3
+threads = 10
 
 Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
