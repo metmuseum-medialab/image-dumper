@@ -17,7 +17,6 @@ grabIds = (task, callback) ->
         if body?.collection?.items?
             new_ids = (/\d+/.exec(link.href)?[0] for link in body.collection.items)
             ids.push new_ids...
-            fs.appendFile 'data/ids.json', new_ids, (err) -> throw err if err
 
         next = body?._links?.next?.href
         if next?
@@ -37,7 +36,7 @@ addToQueue = (href) ->
             working.remove href
 
 q = async.queue grabIds, threads
-q.drain = -> console.log 'done?'
+q.drain = -> fs.appendFile 'data/ids.json', ids, (err) -> throw err if err
 
 request 'http://scrapi.org/ids?images=true', (err, res, body) ->
     max = + /[0-9]+/.exec(JSON.parse(body)?._links?.last?.href)?[0]
