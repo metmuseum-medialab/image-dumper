@@ -23,19 +23,19 @@ grabIds = (task, callback) ->
         if next?
             addToQueue next
         else
-            working.remove task?.href
-            q.push {href: task?.href}, (err) ->
-                console.log "retried #{task.href}"
+            unless +(/[0-9]+/.exec(task?.href)?[0]) is max
+                working.remove task?.href
+                q.push {href: task?.href}, (err) ->
+                    console.log "retried #{task.href}"
 
         callback()
 
 addToQueue = (href) ->
     unless href in seen.concat working
-        unless +(/[0-9]+/.exec(href)?[0]) is max
-            q.push {href}, (err) ->
-                console.log "pushed href #{href}"
-                seen.push href
-                working.remove href
+        q.push {href}, (err) ->
+            console.log "pushed href #{href}"
+            seen.push href
+            working.remove href
 
 q = async.queue grabIds, threads
 q.drain = -> fs.appendFile 'data/ids.json', ids, (err) -> throw err if err
