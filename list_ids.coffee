@@ -2,6 +2,7 @@ request = require 'request'
 async = require 'async'
 fs = require 'fs'
 
+max = 0
 ids = []
 working = []
 seen = []
@@ -30,10 +31,11 @@ grabIds = (task, callback) ->
 
 addToQueue = (href) ->
     unless href in seen.concat working
-        q.push {href}, (err) ->
-            console.log "pushed href #{href}"
-            seen.push href
-            working.remove href
+        unless +(/[0-9]+/.exec(href)?[0]) is max
+            q.push {href}, (err) ->
+                console.log "pushed href #{href}"
+                seen.push href
+                working.remove href
 
 q = async.queue grabIds, threads
 q.drain = -> fs.appendFile 'data/ids.json', ids, (err) -> throw err if err
