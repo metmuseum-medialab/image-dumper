@@ -38,9 +38,20 @@ addToQueue = (href) ->
             working.remove href
 
 q = async.queue grabIds, threads
-q.drain = -> fs.appendFile 'data/ids.json', ids, (err) -> throw err if err
+
+q.drain = writeIds
 
 request 'http://scrapi.org/ids?images=true', (err, res, body) ->
     max = + /[0-9]+/.exec(JSON.parse(body)?._links?.last?.href)?[0]
     starting_pages = (Math.max(1,Math.round(max*(thread-1)/threads)) for thread in [1..threads])
     q.push {href: 'http://scrapi.org/ids?images=true&page='+page} for page in starting_pages
+
+writeIds = ->
+    fs.appendFile 'data/ids.json', {ids}, (err) ->
+        throw err if err
+        process.exit()
+
+process.on 'exit', -> console.log 'goodbye!'
+process.on 'SIGINT', ->
+    console.log 'interrupt'
+    writeIds()
