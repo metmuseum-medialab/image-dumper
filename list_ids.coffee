@@ -47,7 +47,7 @@ request 'http://scrapi.org/ids?images=true', (err, res, body) ->
     q.push {href: 'http://scrapi.org/ids?images=true&page='+page} for page in starting_pages
 
 writeIds = ->
-    fs.appendFile 'data/ids.json', {ids}, (err) ->
+    fs.appendFile 'data/ids.json', ids, (err) ->
         throw err if err
         process.exit()
 
