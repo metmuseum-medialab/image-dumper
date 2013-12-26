@@ -12,7 +12,6 @@ Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
 grabIds = (task, callback) ->
     working.push task?.href
-    fs.appendFile 'data/working.json', task?.href+'\n', (err) -> throw err if err
 
     request {url: task?.href, json: true}, (err, res, body) ->
         if body?.collection?.items?
