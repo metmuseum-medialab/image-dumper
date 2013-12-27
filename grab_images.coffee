@@ -1,5 +1,4 @@
 fs = require 'fs'
-util = require 'util'
 
 fs.readFile 'data/ids.json', (err, data) ->
   throw err if err
@@ -11,8 +10,6 @@ fs.readFile 'data/ids.json', (err, data) ->
   max = 0
   paths = []
   threads = 10
-
-  Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
   grabPath = (task, callback) ->
     id = task?.id
