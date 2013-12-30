@@ -1,4 +1,5 @@
 fs = require 'fs'
+child_process = require 'child_process'
 use_cp = fs.existsSync '/bin/cp'
 
 fs.readFile 'data/paths.json', (err, data) ->
