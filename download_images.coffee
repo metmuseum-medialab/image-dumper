@@ -1,4 +1,6 @@
 fs = require 'fs'
+{extname} = require 'path'
+
 child_process = require 'child_process'
 use_cp = fs.existsSync '/bin/cp'
 
@@ -11,15 +13,13 @@ fs.readFile 'data/paths.json', (err, data) ->
   threads = 10
 
   grabImage = (task, callback) ->
-    source = task?.path.replace('\\\\mma','/Volumes').replace('\\\\','/')
     id = task?.id
-    ext = path.split('.')
-    ext = ext[ext.length-1]
-    dest = 'images/'+id+'.'+ext
+    source = task?.path.split('\\').join('/').replace('/mma/shares','Volumes')
+    dest = 'images/'+id+extname(source).toLowerCase()
     console.log "#{source} => #{dest}"
 
     if use_cp
-      child_process.execFile '/bin/cp', ['--no-target-directory', source, dest]
+      child_process.execFile '/bin/cp', [source, dest]
     else
       fs.createReadStream(source).pipe(fs.createWriteStream(dest))
 
