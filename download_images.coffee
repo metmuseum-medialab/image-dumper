@@ -15,7 +15,7 @@ fs.readFile 'data/paths.json', (err, data) ->
     ext = path.split('.')
     ext = ext[ext.length-1]
     dest = 'images/'+id+'.'+ext
-    console.log source +' => '+ dest
+    console.log "#{source} => #{dest}"
 
     if use_cp
       child_process.execFile '/bin/cp', ['--no-target-directory', source, dest]
