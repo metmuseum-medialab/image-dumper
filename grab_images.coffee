@@ -8,7 +8,7 @@ fs.readFile 'data/ids.json', (err, data) ->
   async = require 'async'
 
   max = 0
-  paths = []
+  paths = {}
   threads = 10
 
   grabPath = (task, callback) ->
@@ -19,7 +19,7 @@ fs.readFile 'data/ids.json', (err, data) ->
       parseString body, (err, results) ->
         for result in results.results.result
           if +(result.PublicAccess[0]) is 1
-            paths.push result.Path+result.FileName
+            paths[id] = result.Path+result.FileName
         callback()
 
   q = async.queue grabPath, threads
@@ -27,7 +27,7 @@ fs.readFile 'data/ids.json', (err, data) ->
   q.push {id} for id in ids
   
   writePaths = ->
-    fs.appendFile 'data/paths.json', JSON.stringify({paths}), (err) ->
+    fs.appendFile 'data/paths.json', JSON.stringify(paths), (err) ->
       throw err if err
       process.exit()
 
