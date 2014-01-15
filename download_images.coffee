@@ -10,9 +10,13 @@ fs.readFile 'data/paths.json', (err, data) ->
   async = require 'async'
 
   copy = (source, dest) ->
-    console.log "#{source} => #{dest}"
     n++
-    fs.createReadStream(source).pipe(fs.createWriteStream(dest))
+    fs.exists source, (exists) ->
+      if exists
+        console.log "#{source} => #{dest}"
+        fs.createReadStream(source).pipe(fs.createWriteStream(dest))
+      else
+        console.log "#{source} does not exist"
 
   grabImage = (task, callback) ->
     id = task?.id
