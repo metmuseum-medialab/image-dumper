@@ -11,6 +11,9 @@ fs.readFile 'data/paths.json', (err, data) ->
 
   copy = (source, dest) ->
     n++
+    if n%100 is 0
+      console.timeEnd "100 images"
+      console.time "100 images"
     fs.exists source, (exists) ->
       if exists
         console.log "#{source} => #{dest}"
@@ -37,6 +40,7 @@ fs.readFile 'data/paths.json', (err, data) ->
         copy source, dest
         return callback()
 
+  console.time "100 images"
   q = async.queue grabImage, 2
   q.drain = -> drain()
   q.push {id, path} for id,path of paths
