@@ -10,6 +10,7 @@ fs.readFile 'data/paths.json', (err, data) ->
   async = require 'async'
 
   copy = (source, dest) ->
+    console.log "#{source} => #{dest}"
     n++
     fs.createReadStream(source).pipe(fs.createWriteStream(dest))
 
