@@ -16,12 +16,16 @@ fs.readFile 'data/paths.json', (err, data) ->
     id = task?.id
     source = task?.path.split('\\').join('/').replace('/mma/shares','Volumes')
     dest = 'images/'+id+extname(source).toLowerCase()
-    console.log "#{source} => #{dest}"
 
-    if use_cp
-      child_process.execFile '/bin/cp', [source, dest]
-    else
-      fs.createReadStream(source).pipe(fs.createWriteStream(dest))
+    fs.exists dest, (exists) ->
+      if exists
+        console.log "#{dest} exists"
+      else
+        console.log "#{source} => #{dest}"
+        if use_cp
+          child_process.execFile '/bin/cp', [source, dest]
+        else
+          fs.createReadStream(source).pipe(fs.createWriteStream(dest))
 
   q = async.queue grabImage, threads
   q.drain = -> process.exit()
