@@ -1,16 +1,17 @@
 fs = require 'fs'
 {extname} = require 'path'
-
-child_process = require 'child_process'
-use_cp = fs.existsSync '/bin/cp'
+n = 0
 
 fs.readFile 'data/paths.json', (err, data) ->
   throw err if err
   paths = JSON.parse data
+  console.log Object.keys(paths).length + " images to copy"
 
   async = require 'async'
 
-  threads = 10
+  copy = (source, dest) ->
+    n++
+    fs.createReadStream(source).pipe(fs.createWriteStream(dest))
 
   grabImage = (task, callback) ->
     id = task?.id
@@ -19,16 +20,27 @@ fs.readFile 'data/paths.json', (err, data) ->
 
     fs.exists dest, (exists) ->
       if exists
-        console.log "#{dest} exists"
+        fs.stat dest, (err, stats) ->
+          if stats.size > 1024
+            console.log "#{dest} exists"
+            return callback()
+          else
+            console.log "recopying #{dest} because its too small"
+            copy source, dest
+            return callback()
       else
-        console.log "#{source} => #{dest}"
-        if use_cp
-          child_process.execFile '/bin/cp', [source, dest]
-        else
-          fs.createReadStream(source).pipe(fs.createWriteStream(dest))
+        copy source, dest
+        return callback()
 
-  q = async.queue grabImage, threads
-  q.drain = -> process.exit()
-  q.push {id,path} for id,path of paths
+  q = async.queue grabImage, 2
+  q.drain = -> drain()
+  q.push {id, path} for id,path of paths
   
-  process.on 'exit', -> console.log 'goodbye!'   
+  drain = ->
+    console.log "copied #{n} images"
+    process.exit()
+
+  process.on 'exit', -> console.log 'goodbye!'
+  process.on 'SIGINT', ->
+    console.log 'interrupt'
+    drain()
