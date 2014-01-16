@@ -10,7 +10,6 @@ fs.readFile 'data/ids.json', (err, data) ->
 
   max = 0
   paths = {}
-  threads = 10
 
   write = (dest, body) ->
     console.log "writing #{dest}"
@@ -35,7 +34,7 @@ fs.readFile 'data/ids.json', (err, data) ->
           write dest, object
           return callback()
 
-  q = async.queue grabPath, threads
+  q = async.queue grabPath, 2
   q.drain = -> process.exit()
   q.push {id} for id in ids
 
