@@ -19,7 +19,7 @@ fs.readFile 'data/paths.json', (err, data) ->
         console.log "#{source} => #{dest}"
         fs.createReadStream(source).pipe(fs.createWriteStream(dest))
       else
-        console.log "#{source} does not exist"
+        console.error "#{source} does not exist"
 
   grabImage = (task, callback) ->
     id = task?.id
