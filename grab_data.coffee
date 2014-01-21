@@ -34,7 +34,7 @@ fs.readFile 'data/ids.json', (err, data) ->
           write dest, object
           return callback()
 
-  q = async.queue grabPath, 2
+  q = async.queue grabPath, 20
   q.drain = -> process.exit()
   q.push {id} for id in ids
 
